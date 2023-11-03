@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.LeaveManagement.Domain", "src\Core\HR.LeaveManagement.Domain\HR.LeaveManagement.Domain.csproj", "{F18402D5-C1A8-47CA-BA17-FF3C1B1EDCDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.LeaveManagement.Application", "src\Core\HR.LeaveManagement.Application\HR.LeaveManagement.Application.csproj", "{7B844402-07E5-4F81-8A15-DFBD915433A5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F18402D5-C1A8-47CA-BA17-FF3C1B1EDCDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F18402D5-C1A8-47CA-BA17-FF3C1B1EDCDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F18402D5-C1A8-47CA-BA17-FF3C1B1EDCDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F18402D5-C1A8-47CA-BA17-FF3C1B1EDCDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B844402-07E5-4F81-8A15-DFBD915433A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B844402-07E5-4F81-8A15-DFBD915433A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B844402-07E5-4F81-8A15-DFBD915433A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B844402-07E5-4F81-8A15-DFBD915433A5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
