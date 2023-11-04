@@ -31,8 +31,6 @@ public class UpdateLeaveRequestCommandHandler : IRequestHandler<UpdateLeaveReque
         {
             await _leaveRequestRepository.ChangeApprovalStatus(leaveRequest, request.ChangeLeaveRequestApprovalDto.Approved);
         }
-        
         return Unit.Value;
     }
-    
 }
