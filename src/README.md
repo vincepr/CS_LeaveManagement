@@ -214,3 +214,54 @@ if (leaveAllocation is null)
     throw new NotFoundException(nameof(leaveAllocation), request.Id);
 ```
 ### Custom Response Types
+While here there is little reason to do so, it is possible create a Base/Individual Response for each Query.
+
+That basically wraps information we want to return, like a collection of errors, etc...
+
+- `Responses/BasecommandResponse.cs`
+```csharp
+public class BaseCommandResponse
+{
+    public int Id { get; set; } 
+    public bool Success { get; set; } = true;
+    public string Message { get; set; }
+    public List<string> Errors { get; set; } = new();
+}
+```
+
+- `DTOs/LeaveRequests/Handlers/commands/CreateLeaveRequestHandler.cs`
+```csharp
+// previously:
+public async Task<int> Handle(CreateLeaveRequestCommand request, CancellationToken cancellationToken)
+{
+    var validator = new CreateLeaveRequestDtoValidator(_leaveTypeRepository);
+    var validationResult = await validator.ValidateAsync(request.CreateLeaveRequestDto, CancellationToken.None);
+    if (validationResult.IsValid == false)
+        throw new ValidationException(validationResult); 
+    
+    var newLeaveRequest = _mapper.Map<LeaveRequest>(request.CreateLeaveRequestDto);
+    return (await _leaveRequestRepository.Add(newLeaveRequest)).Id;
+}
+
+// becomes:
+public async Task<BaseCommandResponse> Handle(CreateLeaveRequestCommand request, CancellationToken cancellationToken)
+{
+    var response = new BaseCommandResponse();
+    var validator = new CreateLeaveRequestDtoValidator(_leaveTypeRepository);
+    var validationResult = await validator.ValidateAsync(request.CreateLeaveRequestDto, CancellationToken.None);
+    
+    if (validationResult.IsValid == false)
+    {
+        response.Success = false;
+        response.Message = "Creation has failed";
+        response.Errors = validationResult.Errors.Select(el => el.ErrorMessage).ToList();
+        return response;
+    }
+    
+    var newLeaveRequest = _mapper.Map<LeaveRequest>(request.CreateLeaveRequestDto);
+    response.Id = (await _leaveRequestRepository.Add(newLeaveRequest)).Id;
+    response.Message = "Creation successful";
+    return response;
+}
+
+```
