@@ -130,8 +130,87 @@ public class CreateLeaveTypeCommandHandler : IRequestHandler<CreateLeaveTypeComm
     }
 }
 ```
+- more complex validation is possible, for example checking if a reference-type id exists in the corresponding table
+```csharp
+public class IleaveRequestDtoValidator : AbstractValidator<ILeaveRequestDto>
+{
+    private readonly ILeaveTypeRepository _leaveTypeRepository;
+
+    public IleaveRequestDtoValidator(ILeaveTypeRepository leaveTyperepository)
+    {
+        _leaveTypeRepository = leaveTyperepository;
+        RuleFor(p => p.StartDate)
+            .LessThan(p => p.EndDate)
+            .WithMessage("{PropertyName} must be before {CpmarisonValue}");
+        
+        RuleFor(p => p.StartDate)
+            .GreaterThanOrEqualTo(DateTime.Now)
+            .WithMessage("{PropertyName} must be in the future.");
+        
+        RuleFor(p => p.LeaveTypeId)
+            .GreaterThan(0)
+            // the referenced leaveType MUST exists:
+            .MustAsync(async (id, token) =>
+            {
+                var leaveTypeExists = await _leaveTypeRepository.Exists(id);
+                return !leaveTypeExists;
+            }).WithMessage("{PropertyName} does not exist.");
+    } 
+}
+```
 
 Note about my thoughts on this approach. 
 - Seems to generate a lot of (is it really unnecessary?) code duplication
 - Instead of validating each Dto by itself why not validate on the Model-level?
   - this would lead to way less "GreaterThan(0)" as it would happen after the Dto to corresponding Model.
+
+## Cusom Exceptions - to enable cleaner error handling/filtering
+
+- `DTOs/Exceptions/BadRequestException.cs`
+```csharp
+public class BadRequestException : ApplicationException
+{
+    public BadRequestException(string message) : base(message) { }
+}
+
+```
+
+
+- `DTOs/Exceptions/NotFoundException.cs`
+```csharp
+public class NotFoundException : ApplicationException
+{
+    public NotFoundException(string name, object key) 
+        : base($"{name} ({key}) was not found.") { }
+}
+
+```
+
+- `DTOs/Exceptions/ValdationException.cs`
+```csharp
+public class ValidationException : ApplicationException
+{
+    public List<string> Errors { get; set; } = new();
+    public ValidationException(FluentValidation.Results.ValidationResult validationResult)
+    {
+        foreach( var error in validationResult.Errors)
+            Errors.Add(error.ErrorMessage);
+    } 
+}
+```
+
+- now we can use our custom errors instead of generic ones, for example when validating:
+```csharp
+// in our create/update handlers validation errors change from:
+if (validationResult.IsValid == false)
+    throw new Exception();
+// to
+if (validationResult.IsValid == false)
+    throw new ValidationException(validationResult);
+
+// in our delete handlers we add:
+var leaveAllocation = await _leaveAllocationRepository.Get(request.Id);
+if (leaveAllocation is null)
+    throw new NotFoundException(nameof(leaveAllocation), request.Id);
+```
+### Custom Response Types
