@@ -1,4 +1,5 @@
 using AutoMapper;
+using HR.LeaveManagement.Application.DTOs.LeaveAllocation.Validators;
 using HR.LeaveManagement.Application.Features.LeaveAllocations.Requests.Commands;
 using HR.LeaveManagement.Application.Persistence.Contracts;
 using HR.LeaveManagement.Domain;
@@ -19,6 +20,11 @@ public class CreateLeaveAllocationCommandHandler : IRequestHandler<CreateLeaveAl
     
     public async Task<int> Handle(CreateLeaveAllocationCommand request, CancellationToken cancellationToken)
     {
+        var validator = new CreateLeaveAllocationDtoValidator();
+        var validationResult = await validator.ValidateAsync(request.CreateLeaveAllocationDto, CancellationToken.None);
+        if (validationResult.IsValid == false)
+            throw new Exception();
+        
         var newLeaveAllocation = _mapper.Map<LeaveAllocation>(request.CreateLeaveAllocationDto);
         return (await _leaveAllocationRepository.Add(newLeaveAllocation)).Id;
     }
