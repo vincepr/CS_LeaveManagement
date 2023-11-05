@@ -3,6 +3,7 @@
 ## Project structure
 - HR.LeaveManagement.Application - all dtos/handlers
 - HR.LeaveManagement.Domain - all of the models/entities
+- HR.LeaveManagement.Infrastructure - all implementations for third party services
 - HR.LeaveManagement.Persistence - repository/db related things
 
 ## MediaR
@@ -384,6 +385,30 @@ public class LeaveRequestRepository : GenericRepository<LeaveRequest>, ILeaveReq
         leaveRequest.Approved = approvalStatus;
         _dbContext.Entry(leaveRequest).State = EntityState.Modified;
         await _dbContext.SaveChangesAsync();
+    }
+}
+```
+
+- to make Setting up all dependency injections easy we make a static function that handles all that at once:
+```csharp
+public static class PersistenceServicesRegistration
+{
+    public static IServiceCollection ConfigurePersistenceServices(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddDbContext<HrDbContext>(options =>
+        {
+            options.UseSqlServer(configuration.GetConnectionString("LeaveManagementConnectionString"));
+        });
+        
+        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        
+        services.AddScoped<ILeaveAllocationRepository, LeaveAllocationRepository>();
+        services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
+        services.AddScoped<ILeaveTypeRepository, LeaveTypeRepositiory>();
+
+        return services;
     }
 }
 ```
