@@ -1,5 +1,9 @@
 # Project HR.LeaveManagement - Clean Architecture
 - ASP.NET Core - Clean Architecture - by Trevoir Williams on youtube: https://www.youtube.com/watch?v=gGa7SLk1-0Q&list=PLUl9BcvgsrKa4mR2sJyGuAAGSos_-daYC&index=20
+## Project structure
+- HR.LeaveManagement.Application - all dtos/handlers
+- HR.LeaveManagement.Domain - all of the models/entities
+- HR.LeaveManagement.Persistence - repository/db related things
 
 ## MediaR
 
@@ -263,5 +267,123 @@ public async Task<BaseCommandResponse> Handle(CreateLeaveRequestCommand request,
     response.Message = "Creation successful";
     return response;
 }
+```
 
+
+## EntityFramework
+- in our DbContext we override SaveChangesAsync to automatically update Timestamps for createAt and modifiedAt
+```csharp
+public class HrDbContext : DbContext
+{
+    public HrDbContext(DbContextOptions<HrDbContext> options)
+        : base(options) { }
+    
+    public DbSet<LeaveRequest> LeaveRequests { get; set; }
+    public DbSet<LeaveType> LeaveTypes { get; set; }
+    public DbSet<LeaveAllocation> LeaveAllocations { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(HrDbContext).Assembly);
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach (var item in ChangeTracker.Entries<BaseDomainEntity>())
+        {
+            // on every change we want to automatically set LastModifiedDate
+            item.Entity.LastModifiedDate = DateTime.Now;
+            
+            // if we newly create the entry we want ot set DateCreate
+            if (item.State == EntityState.Added)
+                item.Entity.DateCreated = DateTime.Now;
+        }
+        // afterwards we just call the base SaveChangesAsync()
+        return base.SaveChangesAsync(cancellationToken);
+    }
+}
+```
+- we create a implementations of the Repositories. First the defaultOne: `HR.Persistance/Repositories/GenericRepository.cs` 
+- this generic implementation will compile down for all of our 3 Types supplied by the HrDbContext
+```csharp
+public class GenericRepository<T> : IGenericRepository<T> where T : class
+{
+    private readonly HrDbContext _dbContext;
+
+    protected GenericRepository(HrDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+    
+    public async Task<T?> Get(int id)
+    {
+        return await _dbContext.Set<T>().FindAsync(id);
+    }
+
+    public async Task<IReadOnlyList<T>> GetAll()
+    {
+        return await _dbContext.Set<T>().ToListAsync();
+    }
+
+    public async Task<T> Add(T entity)
+    {
+        await _dbContext.AddAsync(entity);
+        await _dbContext.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task Update(T entity)
+    {
+        _dbContext.Entry(entity).State = EntityState.Modified;
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task Delete(T entity)
+    {
+        _dbContext.Set<T>().Remove(entity);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<bool> Exists(int id)
+    {
+        var entity = await Get(id);
+        return entity is not null;
+    }
+}
+```
+- And ontop of this always supported base repository we can add our specific functionality:
+```csharp
+public class LeaveRequestRepository : GenericRepository<LeaveRequest>, ILeaveRequestRepository
+{
+    private readonly HrDbContext _dbContext;
+    public LeaveRequestRepository(HrDbContext dbContext) : base(dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public async Task<LeaveRequest?> GetLeaveRequestWithDetails(int id)
+    {
+        var leaveRequest = await _dbContext
+            .LeaveRequests
+            .Include(l => l.LeaveType)
+            .FirstOrDefaultAsync(q => q.Id == id);
+        return leaveRequest;
+    }
+
+    public async Task<List<LeaveRequest>> GetAllLeaveRequestsWithDetails()
+    {
+        var leaveRequests = await _dbContext
+            .LeaveRequests
+            .Include(l => l.LeaveType)
+            .ToListAsync();
+        return leaveRequests;
+    }
+
+    public async Task ChangeApprovalStatus(LeaveRequest leaveRequest, bool? approvalStatus)
+    {
+        leaveRequest.Approved = approvalStatus;
+        _dbContext.Entry(leaveRequest).State = EntityState.Modified;
+        await _dbContext.SaveChangesAsync();
+    }
+}
 ```
