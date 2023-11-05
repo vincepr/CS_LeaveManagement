@@ -62,5 +62,48 @@ public class EmailSender : IEmailSender
                response.StatusCode == HttpStatusCode.OK;
     }
 }
+```
+
+## Create the Api Project
+- hook up the Services:
+```csharp
+// default Services:
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+// custom Services:
+builder.Services.ConfigureApplicationServices();
+builder.Services.ConfigureInfrastructureServices(builder.Configuration);
+builder.Services.ConfigurePersistenceServices(builder.Configuration);
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("CorsPolicy",
+//         corsBuilder => corsBuilder
+//             .AllowAnyOrigin()
+//             .AllowAnyMethod()
+//             .AllowAnyHeader());
+// });
+
+// default app-settings
+var app = builder.Build();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+// custom app-settings:
+// app.UseCors("CorsPolicy");
+
+app.Run();
+```
+
+Now we can hook up migrations for the api project
+```
+dotnet ef --startup-project ./src/Infrastructure/HR.LeaveManagement.Persistence migrations add initialMigration
+dotnet ef --startup-project ./src/Infrastructure/HR.LeaveManagement.Persistence database update
 
 ```

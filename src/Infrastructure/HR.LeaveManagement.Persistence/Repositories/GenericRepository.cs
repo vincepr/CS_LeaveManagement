@@ -7,7 +7,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     private readonly HrDbContext _dbContext;
 
-    protected GenericRepository(HrDbContext dbContext)
+    public GenericRepository(HrDbContext dbContext)
     {
         _dbContext = dbContext;
     }

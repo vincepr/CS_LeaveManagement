@@ -14,7 +14,8 @@ public static class PersistenceServicesRegistration
     {
         services.AddDbContext<HrDbContext>(options =>
         {
-            options.UseSqlServer(configuration.GetConnectionString("LeaveManagementConnectionString"));
+            options.UseSqlite("Data Source = ./hr_sqlite");
+            //options.UseSqlServer(configuration.GetConnectionString("LeaveManagementConnectionString"));
         });
         
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));

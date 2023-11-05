@@ -5,7 +5,7 @@ namespace HR.LeaveManagement.Application;
 
 public static class ApplicationServicesRegistration
 {
-    public static IServiceCollection ConfigureapplicatinSErvices(this IServiceCollection services)
+    public static IServiceCollection ConfigureApplicationServices(this IServiceCollection services)
     {
         // instead of:
         // // services.AddAutoMapper(typeof(MappingProfile));
