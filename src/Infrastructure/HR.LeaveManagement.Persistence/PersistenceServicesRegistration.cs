@@ -14,8 +14,16 @@ public static class PersistenceServicesRegistration
     {
         services.AddDbContext<HrDbContext>(options =>
         {
-            options.UseSqlite("Data Source = ./hr_sqlite");
-            //options.UseSqlServer(configuration.GetConnectionString("LeaveManagementConnectionString"));
+            if ("Development" == Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") )
+            {
+                options.UseSqlite("Data Source = ./hr_sqlite");
+                Console.WriteLine("PersistenceServicesRegistration.cs -> USING SQLITE while in Development");
+            }
+            else
+            {
+                options.UseSqlServer(configuration.GetConnectionString("LeaveManagementConnectionString"));
+                Console.WriteLine("PersistenceServicesRegistration.cs -> USING SqlServer while in Production");
+            }
         });
         
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));

@@ -20,7 +20,7 @@ public class LeaveAllocationRepository : GenericRepository<LeaveAllocation>, ILe
         return leaveAllocation;
     }
 
-    public async Task<List<LeaveAllocation>> GetLeaveAllocationsWithDetails()
+    public async Task<List<LeaveAllocation>> GetAllLeaveAllocationsWithDetails()
     {
         return await _dbContext.LeaveAllocations
             .Include(la => la.LeaveType)

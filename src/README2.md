@@ -100,10 +100,16 @@ app.MapControllers();
 
 app.Run();
 ```
-
-Now we can hook up migrations for the api project
+### Entity Framework when using a Class Library
+Now we can generate migrations for the api project
+- we want the migrations with the corresponding db-context/repositoires. `.Persistence` Project in this case. So we `--project PATH` to it
+- we get an **ERROR** if we try to build migrations: `Unable to create an object of type '[DBContext's Name]'. For the different patterns supported at design time`
+  - This is because EntityFramework needs to know about the db-connection string etc, that gets referenced in our `.Api`-Project.
+  - To solve we can reference our "frontend"-Project with `--startup.project PATH`
 ```
-dotnet ef --startup-project ./src/Infrastructure/HR.LeaveManagement.Persistence migrations add initialMigration
-dotnet ef --startup-project ./src/Infrastructure/HR.LeaveManagement.Persistence database update
-
+dotnet ef --startup-project ./src/Api/HR.LeaveManagement.Api --project ./src/Infrastructure/HR.LeaveManagement.Persistence migrations add initialMigration
+dotnet ef --startup-project ./src/Api/HR.LeaveManagement.Api --project ./src/Infrastructure/HR.LeaveManagement.Persistence database update
 ```
+
+Current timestamp: 3:09
+
