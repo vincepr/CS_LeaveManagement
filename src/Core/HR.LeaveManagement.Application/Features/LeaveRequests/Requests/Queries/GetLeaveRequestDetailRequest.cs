@@ -5,5 +5,5 @@ namespace HR.LeaveManagement.Application.Features.LeaveRequests.Requests.Queries
 
 public class GetLeaveRequestDetailRequest : IRequest<LeaveRequestDto>, IRequest<Unit>
 {
-    public int Id { get; set; }
+    public required int Id { get; set; }
 }

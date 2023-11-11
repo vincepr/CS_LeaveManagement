@@ -4,5 +4,5 @@ namespace HR.LeaveManagement.Application.Features.LeaveAllocations.Requests.Comm
 
 public class DeleteLeaveAllocationCommand : IRequest
 {
-    public int Id { get; set; }
+    public required int Id { get; set; }
 }

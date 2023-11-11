@@ -111,5 +111,5 @@ dotnet ef --startup-project ./src/Api/HR.LeaveManagement.Api --project ./src/Inf
 dotnet ef --startup-project ./src/Api/HR.LeaveManagement.Api --project ./src/Infrastructure/HR.LeaveManagement.Persistence database update
 ```
 
-Current timestamp: 3:09
+Current timestamp: 3:13
 

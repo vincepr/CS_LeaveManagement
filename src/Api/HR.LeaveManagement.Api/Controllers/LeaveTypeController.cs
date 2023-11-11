@@ -21,7 +21,7 @@ namespace HR.LeaveManagement.Api.Controllers
         {
             _mediator = mediator;
         }
-        
+
         // GET: api/LeaveType/
         [HttpGet]
         public async Task<ActionResult<List<LeaveTypeDto>>> Get()
