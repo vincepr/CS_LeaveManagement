@@ -111,5 +111,111 @@ dotnet ef --startup-project ./src/Api/HR.LeaveManagement.Api --project ./src/Inf
 dotnet ef --startup-project ./src/Api/HR.LeaveManagement.Api --project ./src/Infrastructure/HR.LeaveManagement.Persistence database update
 ```
 
-Current timestamp: 3:13
+### Creating the 3 Controllers
+- the 3 controllers are really similar, we just use the xzy_Request objects with our Mediator.  
+```csharp
+namespace HR.LeaveManagement.Api.Controllers;
+[Route("api/[controller]")]
+[ApiController]
+public class LeaveRequestController : ControllerBase
+{
+    private readonly IMediator _mediator;
+    public LeaveRequestController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+        
+    // GET: api/LeaveRequest
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<LeaveRequestDto>>> Get()
+    {
+        var leaveRequests = await _mediator.Send(new GetLeaveRequestListRequest());
+        return Ok(leaveRequests);
+    }
 
+    // GET: api/LeaveRequest/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<LeaveRequestDto>> Get(int id)
+    {
+        return Ok(await _mediator.Send<LeaveRequestDto>(new GetLeaveRequestDetailRequest() { Id = id }));
+    }
+
+    // POST: api/LeaveRequest
+    [HttpPost]
+    public async Task<ActionResult> Post([FromBody] CreateLeaveRequestDto leaveRequest)
+    {
+        var cmd = new CreateLeaveRequestCommand() { CreateLeaveRequestDto = leaveRequest };
+        return Ok(await _mediator.Send(cmd));
+    }
+
+    // PUT: api/LeaveRequest/5
+    [HttpPut("{id}")]
+    public async Task<ActionResult> Put(int id, [FromBody] UpdateLeaveRequestDto leaveRequest)
+    {
+        var cmd = new UpdateLeaveRequestCommand() { Id = id, UpdateLeaveRequestDto = leaveRequest };
+        await _mediator.Send(cmd);
+        return NoContent();
+    }
+        
+    // PUT: api/LeaveRequest/change_approval     - changes to "approved"-status
+    [HttpPut("change_approval/{id}")]
+    public async Task<ActionResult> ChangeApproval(int id, [FromBody] ChangeLeaveRequestApprovalDto approvedRequest)
+    {
+        var cmd = new UpdateLeaveRequestCommand() {Id = id, ChangeLeaveRequestApprovalDto = approvedRequest };
+        await _mediator.Send(cmd);
+        return NoContent();
+    }
+
+    // DELETE: api/LeaveRequest/5
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(int id)
+    {
+        var cmd = new DeleteLeaveRequestCommand() { Id = id };
+        return Ok(await _mediator.Send(cmd));
+    }
+}
+```
+
+## Seeding the Database
+- `HR.Persistence/Configuration/Entities/`
+
+```csharp
+public class LeaveTypeConfiguration : IEntityTypeConfiguration<LeaveType>
+{
+    public void Configure(EntityTypeBuilder<LeaveType> builder)
+    {
+        builder.HasData(
+            new LeaveType()
+            {
+                Id = 1,
+                DefaultDays = 10,
+                Name = "Vacation",
+                CreatedBy = "root-user",
+                LastModifiedBy = "root-user",
+            },
+            new LeaveType
+            {
+                Id = 2,
+                DefaultDays = 0,
+                Name = "Sick",
+                CreatedBy = "root-user",
+                LastModifiedBy = "root-user",
+            });
+    }
+}
+
+```
+- since we previously used the .Assembly we dont have to one by one include our configurations:
+```csharp
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.ApplyConfigurationsFromAssembly(typeof(HrDbContext).Assembly);
+    // again the typeof(HrDbContext).Assembly catches all the IEntityTypeConfiguration<...>
+    // so we dont have to model.Builder.ApplyConfiguration(new LeaveTypeConfiguration()); for each one
+}
+```
+- so we can directly create our migrations and put them in the db:
+```
+dotnet ef --startup-project ./src/Api/HR.LeaveManagement.Api --project ./src/Infrastructure/HR.LeaveManagement.Persistence migrations add SeedintLeaveTypes
+dotnet ef --startup-project ./src/Api/HR.LeaveManagement.Api --project ./src/Infrastructure/HR.LeaveManagement.Persistence database update
+```
