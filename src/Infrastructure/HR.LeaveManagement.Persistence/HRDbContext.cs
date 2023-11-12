@@ -1,5 +1,6 @@
 ﻿using HR.LeaveManagement.Domain;
 using HR.LeaveManagement.Domain.Common;
+using HR.LeaveManagement.Persistence.Configuration.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HR.LeaveManagement.Persistence;
@@ -16,6 +17,8 @@ public class HrDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HrDbContext).Assembly);
+        // again the typeof(HrDbContext).Assembly catches all the IEntityTypeConfiguration<...>
+        // so we dont have to model.Builder.ApplyConfiguration(new LeaveTypeConfiguration()); for each one
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -27,7 +30,12 @@ public class HrDbContext : DbContext
             
             // if we newly create the entry we want ot set DateCreate
             if (item.State == EntityState.Added)
+            {
+                item.Entity.CreatedBy = "current-user";
                 item.Entity.DateCreated = DateTime.Now;
+            }
+            item.Entity.LastModifiedBy = "current-user";
+
         }
         // afterwards we just call the base SaveChangesAsync()
         return base.SaveChangesAsync(cancellationToken);
