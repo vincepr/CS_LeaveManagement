@@ -12,13 +12,13 @@ namespace HR.LeaveManagement.MVC.Services
     {
         private readonly ILocalStorageService _localStorageService;
         private readonly IMapper _mapper;
-        private readonly IClient _httpclient;
+        // private readonly IClient _httpclient;
 
         public LeaveTypeService(IMapper mapper, IClient httpclient, ILocalStorageService localStorageService) : base(httpclient, localStorageService)
         {
             this._localStorageService = localStorageService;
             this._mapper = mapper;
-            this._httpclient = httpclient;
+            // this._httpclient = httpclient;
         }
 
         public async Task<Response<int>> CreateLeaveType(CreateLeaveTypeVM leaveType)
@@ -27,8 +27,7 @@ namespace HR.LeaveManagement.MVC.Services
             {
                 var response = new Response<int>();
                 CreateLeaveTypeDto createLeaveType = _mapper.Map<CreateLeaveTypeDto>(leaveType);
-                AddBearerToken();
-                var apiResponse = await _client.LeaveTypesPOSTAsync(createLeaveType);
+                var apiResponse = await _client.LeaveTypePOSTAsync(createLeaveType);
                 if (apiResponse.Success)
                 {
                     response.Data = apiResponse.Id;
@@ -37,9 +36,7 @@ namespace HR.LeaveManagement.MVC.Services
                 else
                 {
                     foreach (var error in apiResponse.Errors)
-                    {
                         response.ValidationErrors += error + Environment.NewLine;
-                    }
                 }
                 return response;
             }
@@ -48,13 +45,12 @@ namespace HR.LeaveManagement.MVC.Services
                 return ConvertApiExceptions<int>(ex);
             }
         }
-
+        
         public async Task<Response<int>> DeleteLeaveType(int id)
         {
             try
             {
-                AddBearerToken();
-                await _client.LeaveTypesDELETEAsync(id);
+                await _client.LeaveTypeDELETEAsync(id);
                 return new Response<int>() { Success = true };
             }
             catch (ApiException ex)
@@ -62,28 +58,25 @@ namespace HR.LeaveManagement.MVC.Services
                 return ConvertApiExceptions<int>(ex);
             }
         }
-
+        
         public async Task<LeaveTypeVM> GetLeaveTypeDetails(int id)
         {
-            AddBearerToken();
-            var leaveType = await _client.LeaveTypesGETAsync(id);
+            var leaveType = await _client.GetAsync(id);
             return _mapper.Map<LeaveTypeVM>(leaveType);
         }
-
+        
         public async Task<List<LeaveTypeVM>> GetLeaveTypes()
         {
-            AddBearerToken();
-            var leaveTypes = await _client.LeaveTypesAllAsync();
+            var leaveTypes = await _client.LeaveTypeAllAsync();
             return _mapper.Map<List<LeaveTypeVM>>(leaveTypes);
         }
-
+        
         public async Task<Response<int>> UpdateLeaveType(int id, LeaveTypeVM leaveType)
         {
             try
             {
                 LeaveTypeDto leaveTypeDto = _mapper.Map<LeaveTypeDto>(leaveType);
-                AddBearerToken();
-                await _client.LeaveTypesPUTAsync(id.ToString(), leaveTypeDto);
+                await _client.LeaveTypePUTAsync(leaveTypeDto);
                 return new Response<int>() { Success = true };
             }
             catch (ApiException ex)
