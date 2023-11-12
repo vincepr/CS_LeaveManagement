@@ -219,3 +219,20 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 dotnet ef --startup-project ./src/Api/HR.LeaveManagement.Api --project ./src/Infrastructure/HR.LeaveManagement.Persistence migrations add SeedintLeaveTypes
 dotnet ef --startup-project ./src/Api/HR.LeaveManagement.Api --project ./src/Infrastructure/HR.LeaveManagement.Persistence database update
 ```
+
+## Swagger Ui
+- in our Program.cs we can add version info to the swagger ui (among other config options).
+```csharp
+builder.AddSwaggerGen(c =>
+{
+    // we can add info/terms-of-service/version to our swagger-endpoint
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hr LeaveManagement Api", Version = "v1" });
+});
+// ...
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();    // Exception -> html -> readable errors
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HR.LeaveManagement.Api v1"));
+}
+```

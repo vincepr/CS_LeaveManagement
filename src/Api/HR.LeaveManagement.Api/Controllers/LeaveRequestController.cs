@@ -18,7 +18,7 @@ public class LeaveRequestController : ControllerBase
         
     // GET: api/LeaveRequest
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<LeaveRequestDto>>> Get()
+    public async Task<ActionResult<IEnumerable<LeaveRequestListDto>>> Get()
     {
         var leaveRequests = await _mediator.Send(new GetLeaveRequestListRequest());
         return Ok(leaveRequests);
