@@ -1,14 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.LeaveManagement.Domain", "src\Core\HR.LeaveManagement.Domain\HR.LeaveManagement.Domain.csproj", "{F18402D5-C1A8-47CA-BA17-FF3C1B1EDCDC}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HR.LeaveManagement.Domain", "src\Core\HR.LeaveManagement.Domain\HR.LeaveManagement.Domain.csproj", "{F18402D5-C1A8-47CA-BA17-FF3C1B1EDCDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.LeaveManagement.Application", "src\Core\HR.LeaveManagement.Application\HR.LeaveManagement.Application.csproj", "{7B844402-07E5-4F81-8A15-DFBD915433A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HR.LeaveManagement.Application", "src\Core\HR.LeaveManagement.Application\HR.LeaveManagement.Application.csproj", "{7B844402-07E5-4F81-8A15-DFBD915433A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.LeaveManagement.Persistence", "src\Infrastructure\HR.LeaveManagement.Persistence\HR.LeaveManagement.Persistence.csproj", "{648723BC-BDC3-42B2-8469-90DEA441F1D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HR.LeaveManagement.Persistence", "src\Infrastructure\HR.LeaveManagement.Persistence\HR.LeaveManagement.Persistence.csproj", "{648723BC-BDC3-42B2-8469-90DEA441F1D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.LeaveManagement.Infrastructure", "src\Infrastructure\HR.LeaveManagement.Infrastructure\HR.LeaveManagement.Infrastructure.csproj", "{81FF8288-311F-4AEB-AA38-6006AC44BB99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HR.LeaveManagement.Infrastructure", "src\Infrastructure\HR.LeaveManagement.Infrastructure\HR.LeaveManagement.Infrastructure.csproj", "{81FF8288-311F-4AEB-AA38-6006AC44BB99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.LeaveManagement.Api", "src\Api\HR.LeaveManagement.Api\HR.LeaveManagement.Api.csproj", "{515D2796-7655-4B39-9485-94516292ABB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HR.LeaveManagement.Api", "src\Api\HR.LeaveManagement.Api\HR.LeaveManagement.Api.csproj", "{515D2796-7655-4B39-9485-94516292ABB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HR.LeaveManagement.MVC", "src\Ui\HR.LeaveManagement.MVC\HR.LeaveManagement.MVC.csproj", "{B002B479-8AA5-4C08-8148-BC251AF9EDB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +41,12 @@ Global
 		{515D2796-7655-4B39-9485-94516292ABB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{515D2796-7655-4B39-9485-94516292ABB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{515D2796-7655-4B39-9485-94516292ABB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B002B479-8AA5-4C08-8148-BC251AF9EDB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B002B479-8AA5-4C08-8148-BC251AF9EDB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B002B479-8AA5-4C08-8148-BC251AF9EDB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B002B479-8AA5-4C08-8148-BC251AF9EDB4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
