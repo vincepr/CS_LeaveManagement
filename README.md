@@ -1,4 +1,4 @@
-# Project HR.LeaveManagement - Clean Architecture
+# 1 Project HR.LeaveManagement - Clean Architecture
 - ASP.NET Core - Clean Architecture - by Trevoir Williams on youtube: https://www.youtube.com/watch?v=gGa7SLk1-0Q&list=PLUl9BcvgsrKa4mR2sJyGuAAGSos_-daYC&index=20
 ## Project structure
 - HR.LeaveManagement.Application - all dtos/handlers
